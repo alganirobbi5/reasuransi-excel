@@ -1,0 +1,38 @@
+@extends('layouts.app')
+
+@section('title', 'Dashboard — Reasuransi Excel')
+
+@section('content')
+<div class="page-head">
+    <h1>Dashboard Laporan Reasuransi</h1>
+    <p>Aplikasi pengelolaan laporan reasuransi untuk produksi, klaim, dan export Excel berdasarkan template workbook 3 sheet.</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <h3>Total Produksi</h3>
+        <div class="value">{{ number_format((int) ($totalProduksi ?? 0), 0, ',', '.') }}</div>
+        <div class="sub">Data produksi &amp; premi reasuransi</div>
+    </div>
+    <div class="card">
+        <h3>Total Klaim</h3>
+        <div class="value">{{ number_format((int) ($totalKlaim ?? 0), 0, ',', '.') }}</div>
+        <div class="sub">Data klaim reasuransi</div>
+    </div>
+    <div class="card">
+        <h3>Total Premi Reasuransi</h3>
+        <div class="value">Rp {{ number_format((float) ($totalPremi ?? 0), 2, ',', '.') }}</div>
+        <div class="sub">Akumulasi premi reasuransi</div>
+    </div>
+    <div class="card">
+        <h3>Total Recovery Klaim</h3>
+        <div class="value">Rp {{ number_format((float) ($totalRecovery ?? 0), 2, ',', '.') }}</div>
+        <div class="sub">Akumulasi recovery klaim</div>
+    </div>
+</div>
+
+<div class="panel">
+    <h2>Alur Laporan</h2>
+    <p>Workbook Excel hasil export berisi 3 sheet: <strong>Laporan Produksi &amp; Premi Reasur</strong>, <strong>Laporan Klaim Reasuransi</strong>, dan <strong>Ringkasan Akun Keuangan</strong>. Modul input dan export detail dikerjakan pada phase berikutnya oleh masing-masing anggota kelompok.</p>
+</div>
+@endsection
