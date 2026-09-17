@@ -194,21 +194,22 @@ Formulir `A1:O12` (23 merged cells) dengan rantai formula hidup:
 | E11 | `0.1` (konstanta template, format persen) |
 | E12 | `=B11*E11` |
 | H11 | `=B11-E12` |
-| K11 | **kosong** (belum ada sumber nilai yang dikonfirmasi) |
+| K11 | Total recovery seluruh data Klaim (`SUM(recovery)`), dihitung programmatic dari database saat export (nilai, bukan formula Excel, bukan hardcode) |
 | N11 | `=K11-H11` |
 | B5/E5/H5/K5/N5 | cermin `=B11`, `=E12`, `=H11`, `=K11`, `=N11` |
 
-> K11 **bukan** total recovery otomatis. Nilai `700000000` di template
-> adalah contoh tanpa bukti formula dan tidak diimplementasikan.
+> K11 adalah total recovery otomatis dari database (`SUM(klaims.recovery)`
+> saat export). Nilai `700000000` di template hanyalah contoh tanpa bukti
+> formula dan tidak dipakai.
 
 ## 10. Known Business Decisions / Pending Confirmation
 
 Item di bawah ini **bukan bug teknis** — implementasi mengikuti template
 apa adanya dan menunggu keputusan pemilik kebutuhan/template:
 
-1. **Sumber K11 belum dikonfirmasi** — kandidat (`SUM(recovery)`,
-   `SUM(total_nilai_klaim)`, `SUM(up_ceded)`, atau ketik manual) tidak
-   didukung bukti di file template; cell dibiarkan kosong.
+1. **Sumber K11 sudah diputuskan (Phase 28)** — K11 = total recovery
+   dari seluruh data Klaim (`SUM(klaims.recovery)`), dihitung programmatic
+   dari database saat export; cell tidak lagi kosong.
 2. **Tarif komisi 10% (E11)** masih mengikuti angka template; belum
    diputuskan apakah tetap, per jenis reasuransi, atau input user.
 3. **Nama Sheet 2** di implementasi tanpa trailing whitespace template
@@ -221,9 +222,9 @@ apa adanya dan menunggu keputusan pemilik kebutuhan/template:
 
 Hasil audit final (`php artisan test`, SQLite `:memory:`):
 
-- **38 passed, 156 assertions, 0 failures**
+- **39 passed, 161 assertions, 0 failures**
 - Cakupan: CRUD Produksi (8), CRUD Klaim (8), export Sheet 1 (5),
-  Sheet 2 (6), Sheet 3 (9), contoh bawaan (2).
+  Sheet 2 (6), Sheet 3 (10), contoh bawaan (2).
 
 Realistic test terverifikasi (5 Produksi + 3 Klaim via form HTTP):
 
@@ -289,7 +290,8 @@ tests/
 10. Buka Sheet 3 — tunjukkan rantai B11 → E12 → H11 → N11 dan
     referensi lintas-sheet ke total Sheet 1.
 11. Tunjukkan formula (bukan nilai beku) dan hubungan antar-sheet;
-    jelaskan bahwa K11 masih kosong menunggu keputusan bisnis (§10).
+    K11 menampilkan total recovery dari data Klaim dan N11 menghitung
+    `K11 - H11`.
 
 ## 15. Troubleshooting
 

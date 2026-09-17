@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Exports\ReasuransiExport;
 use App\Exports\RingkasanKeuanganSheet;
+use App\Models\Klaim;
 use App\Models\Produksi;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -29,6 +30,22 @@ class RingkasanKeuanganSheetTest extends TestCase
         ], $overrides));
     }
 
+    private function makeKlaim(array $overrides = []): Klaim
+    {
+        return Klaim::create(array_merge([
+            'no_klaim' => 'KLM-001',
+            'no_polis' => 'POL-001',
+            'nama_tertanggung' => 'Siti Aminah',
+            'penyebab_klaim' => 'Sakit',
+            'tanggal_lahir' => '1985-03-20',
+            'total_nilai_klaim' => 1500000000,
+            'up_utama' => 1000000000,
+            'recovery' => 700000000,
+            'up_ceded' => 800000000,
+            'status_klaim' => 'Dalam Investigasi',
+        ], $overrides));
+    }
+
     private function storeAndLoad(object $export, string $file): \PhpOffice\PhpSpreadsheet\Spreadsheet
     {
         Excel::store($export, $file, 'local');
@@ -38,7 +55,7 @@ class RingkasanKeuanganSheetTest extends TestCase
 
     protected function tearDown(): void
     {
-        foreach (['sheet3-layout.xlsx', 'sheet3-zero.xlsx', 'sheet3-multi.xlsx', 'sheet3-workbook.xlsx'] as $file) {
+        foreach (['sheet3-layout.xlsx', 'sheet3-zero.xlsx', 'sheet3-multi.xlsx', 'sheet3-empty.xlsx', 'sheet3-workbook.xlsx'] as $file) {
             if (Storage::disk('local')->exists($file)) {
                 Storage::disk('local')->delete($file);
             }
@@ -133,11 +150,25 @@ class RingkasanKeuanganSheetTest extends TestCase
         $this->assertEquals(0.1, $ws->getCell('E11')->getValue());
     }
 
-    public function test_k11_remains_empty(): void
+    public function test_k11_holds_total_recovery_from_database(): void
     {
+        $this->makeKlaim(['recovery' => 700000000]);
+        $this->makeKlaim(['no_klaim' => 'KLM-002', 'recovery' => 1250000000]);
+
         $ws = $this->sheet3('sheet3-layout.xlsx');
 
-        $this->assertNull($ws->getCell('K11')->getValue());
+        $this->assertEquals(700000000 + 1250000000, $ws->getCell('K11')->getValue());
+        $this->assertFalse(is_string($ws->getCell('K11')->getValue()));
+        // N11 keeps its formula against the live K11 value.
+        $this->assertSame('=K11-H11', $ws->getCell('N11')->getValue());
+    }
+
+    public function test_k11_is_zero_without_klaim(): void
+    {
+        $ws = $this->sheet3('sheet3-empty.xlsx');
+
+        $this->assertEquals(0, $ws->getCell('K11')->getValue());
+        $this->assertFalse(is_string($ws->getCell('K11')->getValue()));
     }
 
     public function test_workbook_still_contains_three_sheets(): void

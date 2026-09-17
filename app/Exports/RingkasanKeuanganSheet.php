@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\Klaim;
 use App\Models\Produksi;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -42,6 +43,8 @@ class RingkasanKeuanganSheet implements FromCollection, WithTitle, WithColumnWid
     public const BLOCK_COLUMNS = ['B', 'E', 'H', 'K', 'N'];
 
     private ?int $productionCount = null;
+
+    private ?float $totalRecovery = null;
 
     public function title(): string
     {
@@ -86,6 +89,16 @@ class RingkasanKeuanganSheet implements FromCollection, WithTitle, WithColumnWid
         $this->productionCount ??= Produksi::count();
 
         return "'".ProduksiSheet::SHEET_TITLE."'!H".(ProduksiSheet::DATA_START_ROW + $this->productionCount);
+    }
+
+    /**
+     * Total recovery across all Klaim records. Single query per export
+     * instance; 0 when no klaim exist (accounting format renders it
+     * as "-" per template).
+     */
+    private function totalRecovery(): float
+    {
+        return $this->totalRecovery ??= (float) Klaim::sum('recovery');
     }
 
     private function applyTemplate(Worksheet $ws): void
@@ -173,8 +186,8 @@ class RingkasanKeuanganSheet implements FromCollection, WithTitle, WithColumnWid
         $ws->setCellValue('E11', 0.1);
         $ws->getStyle('E11:F11')->getNumberFormat()->setFormatCode('0%');
         $ws->setCellValue('H11', '=B11-E12');
-        // K11 intentionally left blank (audit decision: no evidence for
-        // recovery source; template's 700000000 is an unverified sample).
+        // K11 = SUM(Klaim.recovery) from the database (Phase 28 decision).
+        $ws->setCellValue('K11', $this->totalRecovery());
         $ws->setCellValue('N11', '=K11-H11');
         foreach (['B', 'H', 'K', 'N'] as $col) {
             $next = chr(ord($col) + 1);
