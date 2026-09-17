@@ -5,7 +5,7 @@
 @section('content')
 <div class="page-head">
     <h1>Export Laporan Excel</h1>
-    <p>Aplikasi akan menghasilkan satu workbook Excel berdasarkan template <strong>BRF_Laporan Reas(1).xlsx</strong> dengan 3 sheet berikut.</p>
+    <p>Unduh satu workbook Excel berdasarkan template <strong>BRF_Laporan Reas(1).xlsx</strong> dengan 3 sheet berikut. Data diambil langsung dari database saat ini.</p>
 </div>
 
 <div class="panel">
@@ -16,8 +16,8 @@
         <li>Ringkasan Akun Keuangan</li>
     </ol>
     <p>
-        <button class="btn" type="button" disabled>Export Excel — Akan tersedia setelah modul export selesai</button>
+        <a class="btn" href="{{ route('export.excel') }}">Unduh laporan-reasuransi.xlsx</a>
     </p>
-    <p class="sub" style="color: var(--muted); font-size: 0.85rem;">Implementasi export penuh (scope Robbi, integrasi modul Renno &amp; William) dikerjakan setelah fondasi stabil.</p>
+    <p class="sub" style="color: var(--muted); font-size: 0.85rem;">Total premi dan saldo dihitung otomatis dengan formula Excel dari data Produksi dan Klaim yang tersimpan.</p>
 </div>
 @endsection

@@ -3,16 +3,23 @@
 @section('title', 'Laporan Produksi & Premi Reasuransi')
 
 @section('content')
-<div class="page-head">
-    <h1>Laporan Produksi &amp; Premi Reasuransi</h1>
-    <p>Halaman dasar data produksi reasuransi. Jumlah data: <strong>{{ $produksis->count() }}</strong>. Form input produksi (scope Renno) belum dibuat pada phase ini.</p>
+<div class="page-head page-head-row">
+    <div>
+        <h1>Laporan Produksi &amp; Premi Reasuransi</h1>
+        <p>Jumlah data: <strong>{{ $produksis->count() }}</strong>. Total premi dihitung dinamis dari data tersimpan pada Sheet 1 hasil export.</p>
+    </div>
+    <a class="btn" href="{{ route('produksi.create') }}">+ Tambah Produksi</a>
 </div>
+
+@if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+@endif
 
 <div class="table-wrap">
     @if($produksis->isEmpty())
         <div class="empty">
             <p><strong>Belum ada data produksi.</strong></p>
-            <p>Data akan tampil di sini setelah modul input Produksi tersedia.</p>
+            <p><a class="link" href="{{ route('produksi.create') }}">Tambah data pertama</a> untuk mulai mengisi laporan.</p>
         </div>
     @else
         <table>
@@ -27,6 +34,7 @@
                     <th>UP Ceded</th>
                     <th>Jenis Reasuransi</th>
                     <th>Premi Reasuransi</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +49,14 @@
                         <td class="num">{{ number_format((float) $p->up_ceded, 2, ',', '.') }}</td>
                         <td>{{ $p->jenis_reasuransi }}</td>
                         <td class="num">{{ number_format((float) $p->premi_reasuransi, 2, ',', '.') }}</td>
+                        <td class="actions">
+                            <a class="link" href="{{ route('produksi.edit', $p) }}">Ubah</a>
+                            <form method="POST" action="{{ route('produksi.destroy', $p) }}" onsubmit="return confirm('Hapus data polis {{ $p->no_polis }}?')">
+                                @csrf
+                                @method('DELETE')
+                                <button class="link link-danger" type="submit">Hapus</button>
+                            </form>
+                        </td>
                     </tr>
                 @endforeach
             </tbody>

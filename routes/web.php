@@ -14,8 +14,38 @@ Route::get('/', [DashboardController::class, 'index'])
 Route::get('/produksi', [ProduksiController::class, 'index'])
     ->name('produksi.index');
 
+Route::get('/produksi/create', [ProduksiController::class, 'create'])
+    ->name('produksi.create');
+
+Route::post('/produksi', [ProduksiController::class, 'store'])
+    ->name('produksi.store');
+
+Route::get('/produksi/{produksi}/edit', [ProduksiController::class, 'edit'])
+    ->name('produksi.edit');
+
+Route::put('/produksi/{produksi}', [ProduksiController::class, 'update'])
+    ->name('produksi.update');
+
+Route::delete('/produksi/{produksi}', [ProduksiController::class, 'destroy'])
+    ->name('produksi.destroy');
+
 Route::get('/klaim', [KlaimController::class, 'index'])
     ->name('klaim.index');
+
+Route::get('/klaim/create', [KlaimController::class, 'create'])
+    ->name('klaim.create');
+
+Route::post('/klaim', [KlaimController::class, 'store'])
+    ->name('klaim.store');
+
+Route::get('/klaim/{klaim}/edit', [KlaimController::class, 'edit'])
+    ->name('klaim.edit');
+
+Route::put('/klaim/{klaim}', [KlaimController::class, 'update'])
+    ->name('klaim.update');
+
+Route::delete('/klaim/{klaim}', [KlaimController::class, 'destroy'])
+    ->name('klaim.destroy');
 
 Route::get('/export', [ExportController::class, 'index'])
     ->name('export.index');

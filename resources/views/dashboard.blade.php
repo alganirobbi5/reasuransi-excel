@@ -33,6 +33,11 @@
 
 <div class="panel">
     <h2>Alur Laporan</h2>
-    <p>Workbook Excel hasil export berisi 3 sheet: <strong>Laporan Produksi &amp; Premi Reasur</strong>, <strong>Laporan Klaim Reasuransi</strong>, dan <strong>Ringkasan Akun Keuangan</strong>. Modul input dan export detail dikerjakan pada phase berikutnya oleh masing-masing anggota kelompok.</p>
+    <p>Workbook Excel hasil export berisi 3 sheet: <strong>Laporan Produksi &amp; Premi Reasur</strong>, <strong>Laporan Klaim Reasuransi</strong>, dan <strong>Ringkasan Akun Keuangan</strong>. Total premi dan saldo pada workbook dihitung otomatis dari data yang tersimpan.</p>
+    <div class="btn-row">
+        <a class="btn" href="{{ route('produksi.create') }}">+ Tambah Produksi</a>
+        <a class="btn" href="{{ route('klaim.create') }}">+ Tambah Klaim</a>
+        <a class="btn btn-secondary" href="{{ route('export.excel') }}">Unduh Excel</a>
+    </div>
 </div>
 @endsection
